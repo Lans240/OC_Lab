@@ -110,3 +110,74 @@ Elapsed time =    0.000 seconds
 -->
 
  
+Задание 1:
+@Lans240 ➜ .../OC_Lab/lab2/src/swap (master) $ gcc swap.c main.c -o program
+@Lans240 ➜ .../OC_Lab/lab2/src/swap (master) $ ./program
+b a
+
+Задание 2:
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ gcc -o revert_string main.c revert_string.c
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ ./revert_string "Hello World"
+Reverted: dlroW olleH
+
+Стек:
+
+- Автоматическое управление (LIFO)
+
+- Быстрый доступ
+
+- Ограниченный размер
+
+- Локальные переменные
+
+- Автоматическое освобождение при выходе из области видимости
+
+Куча:
+
+- Ручное управление (malloc/free)
+
+- Медленнее стека
+
+- Большой размер
+
+- Динамические данные
+
+- Требует явного освобождения
+
+Задание 3:
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ nano build.sh
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ chmod +x build.sh
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ ./build.sh
+Building static version...
+Building dynamic version...
+Done! Run:
+Static:  ./program_static 'Your text'
+Dynamic: LD_LIBRARY_PATH=. ./program_dynamic 'Your text'
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ ./program_static "Hello Static"
+Reverted: citatS olleH
+@Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ LD_LIBRARY_PATH=. ./program_dynamic "Hello Dynamic"
+Reverted: cimanyD olleH
+
+
+Задание 4:
+@Lans240 ➜ /workspaces/OC_Lab/lab2/src (master) $ nano compile_tests.sh
+@Lans240 ➜ /workspaces/OC_Lab/lab2/src (master) $ chmod +x compile_tests.sh
+@Lans240 ➜ /workspaces/OC_Lab/lab2/src (master) $ ./compile_tests.sh
+Создаем библиотеку...
+Компилируем тесты...
+Запускаем тесты...
+
+
+     CUnit - A unit testing framework for C - Version 2.1-3
+     http://cunit.sourceforge.net/
+
+
+Suite: Suite
+  Test: test of RevertString function ...passed
+
+Run Summary:    Type  Total    Ran Passed Failed Inactive
+              suites      1      1    n/a      0        0
+               tests      1      1      1      0        0
+             asserts      4      4      4      0      n/a
+
+Elapsed time =    0.000 seconds

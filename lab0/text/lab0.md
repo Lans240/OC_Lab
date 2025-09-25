@@ -144,3 +144,11 @@
 ## Про обратную связь
 
 Материалы данного курса могут содержать ошибки, опечатки и неточности. Если вы заметили, что-то, что нужно поправить напишите об этом в whatsup канал.
+
+@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ mkdir hello
+@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ cd hello
+@Lans240 ➜ /workspaces/OC_Lab/lab0/hello (master) $ touch empty
+@Lans240 ➜ /workspaces/OC_Lab/lab0/hello (master) $ cd
+@Lans240 ➜ ~ $ cd /workspaces/OC_Lab/lab0
+@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ cp src/hello.c hello
+@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ mv hello/hello.c hello/newhello.c

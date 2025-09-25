@@ -22,10 +22,3 @@
 Вы можете ориентироваться на ответ в течении 24 часов в будние дни. Вопрос нужно помечать тегом @question.
 
 
-@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ mkdir hello
-@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ cd hello
-@Lans240 ➜ /workspaces/OC_Lab/lab0/hello (master) $ touch empty
-@Lans240 ➜ /workspaces/OC_Lab/lab0/hello (master) $ cd
-@Lans240 ➜ ~ $ cd /workspaces/OC_Lab/lab0
-@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ cp src/hello.c hello
-@Lans240 ➜ /workspaces/OC_Lab/lab0 (master) $ mv hello/hello.c hello/newhello.c

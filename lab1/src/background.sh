@@ -1,9 +1,6 @@
 #!/bin/bash
 
-for i in {1..10}
+for i in {1..300}
 do
-    echo "$i sec"
     sleep 1
 done
-
-echo "Done!"

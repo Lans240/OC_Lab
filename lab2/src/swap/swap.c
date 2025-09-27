@@ -6,3 +6,4 @@ void Swap(char *left, char *right)
     	*left = *right;        // Записываем значение из b в a
     	*right = temp;      // Восстанавливаем значение a в b из временной переменной
 }
+

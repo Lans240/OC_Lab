@@ -120,30 +120,6 @@ b a
 @Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ ./revert_string "Hello World"
 Reverted: dlroW olleH
 
-Стек:
-
-- Автоматическое управление (LIFO)
-
-- Быстрый доступ
-
-- Ограниченный размер
-
-- Локальные переменные
-
-- Автоматическое освобождение при выходе из области видимости
-
-Куча:
-
-- Ручное управление (malloc/free)
-
-- Медленнее стека
-
-- Большой размер
-
-- Динамические данные
-
-- Требует явного освобождения
-
 Задание 3:
 @Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ nano build.sh
 @Lans240 ➜ .../OC_Lab/lab2/src/revert_string (master) $ chmod +x build.sh

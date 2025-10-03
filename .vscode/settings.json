@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "random": "c",
-        "limits.h": "c"
+        "limits.h": "c",
+        "find_min_max.h": "c",
+        "stdio.h": "c",
+        "types.h": "c"
     }
 }

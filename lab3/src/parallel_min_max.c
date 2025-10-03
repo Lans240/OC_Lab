@@ -99,6 +99,7 @@ int main(int argc, char **argv) {
   }
 
   int *array = malloc(sizeof(int) * array_size);
+  // проверка на ошибку выделения памяти
   if (array == NULL) {
     perror("malloc");
     return 1;
@@ -214,7 +215,6 @@ int main(int argc, char **argv) {
         continue;
       }
       fclose(f);
-      // можно удалить файл при желании:
       // remove(filename);
     } else {
       int buf[2];

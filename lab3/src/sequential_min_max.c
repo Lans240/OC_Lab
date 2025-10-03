@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  int seed = atoi(argv[1]);
+  int seed = atoi(argv[1]);   // Преобразует строку в число
   if (seed <= 0) {
     printf("seed is a positive number\n");
     return 1;

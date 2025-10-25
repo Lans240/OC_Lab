@@ -7,7 +7,7 @@
 Откройте терминал в папке с файлом `process_memory.c` и выполните команду:
 
 ```bash
-gcc -o process_memory process_memory.c -Wno-implicit-int
+gcc -o process_memory process_memory.c -w
 ```
 
 *   `gcc` — это компилятор (GNU C Compiler).

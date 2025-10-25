@@ -4,6 +4,8 @@
         "limits.h": "c",
         "find_min_max.h": "c",
         "stdio.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "wait.h": "c",
+        "unistd.h": "c"
     }
 }

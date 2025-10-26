@@ -1,3 +1,5 @@
+//gcc -o deadlock deadlock.c -pthread
+
 #include <stdio.h>
 #include <pthread.h>
 #include <unistd.h>

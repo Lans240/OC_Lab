@@ -1,14 +1,14 @@
 /********************************************************
- * An example source module to accompany...
+ * Пример исходного модуля для книги...
  *
  * "Using POSIX Threads: Programming with Pthreads"
- *     by Brad nichols, Dick Buttlar, Jackie Farrell
+ *     автор: Brad Nichols, Dick Buttlar, Jackie Farrell
  *     O'Reilly & Associates, Inc.
- *  Modified by A.Kostin
+ *  Модифицировано A.Kostin
  ********************************************************
  * mutex.c
  *
- * Simple multi-threaded example with a mutex lock.
+ * Простой многопоточный пример с мьютексом.
  */
 #include <errno.h>
 #include <pthread.h>
@@ -18,7 +18,7 @@
 void do_one_thing(int *);
 void do_another_thing(int *);
 void do_wrap_up(int);
-int common = 0; /* A shared variable for two threads */
+int common = 0; /* Общая переменная для двух потоков */
 int r1 = 0, r2 = 0, r3 = 0;
 pthread_mutex_t mut = PTHREAD_MUTEX_INITIALIZER;
 
@@ -61,10 +61,10 @@ void do_one_thing(int *pnum_times) {
     printf("doing one thing\n");
     work = *pnum_times;
     printf("counter = %d\n", work);
-    work++; /* increment, but not write */
+    work++; /* инкремент без записи */
     for (k = 0; k < 500000; k++)
-      ;                 /* long cycle */
-    *pnum_times = work; /* write back */
+      ;                 /* длинный цикл */
+    *pnum_times = work; /* запись значения */
 	// pthread_mutex_unlock(&mut);
   }
 }
@@ -78,10 +78,10 @@ void do_another_thing(int *pnum_times) {
     printf("doing another thing\n");
     work = *pnum_times;
     printf("counter = %d\n", work);
-    work++; /* increment, but not write */
+    work++; /* инкремент без записи */
     for (k = 0; k < 500000; k++)
-      ;                 /* long cycle */
-    *pnum_times = work; /* write back */
+      ;                 /* длинный цикл */
+    *pnum_times = work; /* запись значения */
     // pthread_mutex_unlock(&mut);
   }
 }

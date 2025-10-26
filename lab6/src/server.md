@@ -396,3 +396,329 @@ int main(int argc, char **argv) {
 4. **Эффективность**: Используется оптимальный алгоритм умножения по модулю
 
 Эта архитектура демонстрирует классический подход к распределенным вычислениям с использованием модели "мастер-воркер", где клиент (мастер) распределяет задачи между серверами (воркерами).
+
+
+
+Расскажу максимально подробно о каждом из этих понятий и системных вызовов:
+
+## Необходимые знания для сетевого программирования
+
+**Базовые концепции:**
+- Модель OSI и TCP/IP
+- IP-адресация (IPv4/IPv6)
+- Портовая система (0-65535)
+- Клиент-серверная архитектура
+- Байтовый порядок (endianness)
+- Блокирующие и неблокирующие операции
+
+## TCP и TCP/IP
+
+**TCP/IP** - это набор сетевых протоколов, состоящий из 4 уровней:
+
+1. **Прикладной уровень** (HTTP, FTP, SMTP)
+2. **Транспортный уровень** (TCP, UDP)
+3. **Сетевой уровень** (IP, ICMP)
+4. **Канальный уровень** (Ethernet, Wi-Fi)
+
+**TCP (Transmission Control Protocol)** - это протокол транспортного уровня с установлением соединения.
+
+**Характеристики TCP:**
+- Гарантированная доставка данных
+- Последовательность пакетов
+- Контроль перегрузки
+- Повторная передача потерянных пакетов
+- Управление потоком
+
+**TCP-соединение устанавливается в 3 этапа (three-way handshake):**
+1. SYN - клиент отправляет запрос на соединение
+2. SYN-ACK - сервер подтверждает и отправляет свой запрос
+3. ACK - клиент подтверждает соединение
+
+## TCP vs UDP
+
+| Параметр | TCP | UDP |
+|----------|-----|-----|
+| **Соединение** | Ориентирован на соединение | Без соединения |
+| **Надежность** | Гарантированная доставка | Нет гарантий |
+| **Порядок данных** | Сохраняет порядок | Не сохраняет порядок |
+| **Скорость** | Медленнее из-за накладных расходов | Быстрее |
+| **Контроль перегрузки** | Есть | Нет |
+| **Использование** | Веб-браузеры, email, файловые передачи | Видеостриминг, игры, DNS |
+
+## Системный вызов socket()
+
+```c
+int socket(int domain, int type, int protocol);
+```
+
+**Назначение:** Создание конечной точки для сетевого соединения.
+
+**Параметры:**
+- `domain`: семейство протоколов
+  - `AF_INET` - IPv4
+  - `AF_INET6` - IPv6
+  - `AF_UNIX` - локальные сокеты
+- `type`: тип сокета
+  - `SOCK_STREAM` - TCP (надежный, потоковый)
+  - `SOCK_DGRAM` - UDP (дейтаграммный)
+- `protocol`: обычно 0 (автоматический выбор)
+
+**Возвращает:** файловый дескриптор сокета или -1 при ошибке
+
+**Пример:**
+```c
+int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+if (sockfd < 0) {
+    perror("socket creation failed");
+    exit(EXIT_FAILURE);
+}
+```
+
+## Системный вызов bind()
+
+```c
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+**Назначение:** Привязка сокета к конкретному IP-адресу и порту.
+
+**Параметры:**
+- `sockfd` - файловый дескриптор сокета
+- `addr` - указатель на структуру адреса
+- `addrlen` - размер структуры адреса
+
+**Структуры адресов:**
+```c
+// Для IPv4
+struct sockaddr_in {
+    sa_family_t    sin_family;  // AF_INET
+    in_port_t      sin_port;    // номер порта (сетевое представление)
+    struct in_addr sin_addr;    // IP-адрес
+};
+
+// Для IPv6
+struct sockaddr_in6 {
+    sa_family_t     sin6_family;   // AF_INET6
+    in_port_t       sin6_port;     // номер порта
+    struct in6_addr sin6_addr;     // IPv6 адрес
+    uint32_t        sin6_flowinfo; // информация о потоке
+    uint32_t        sin6_scope_id; // ID области
+};
+```
+
+**Пример:**
+```c
+struct sockaddr_in server_addr;
+memset(&server_addr, 0, sizeof(server_addr));
+server_addr.sin_family = AF_INET;
+server_addr.sin_addr.s_addr = INADDR_ANY;  // все интерфейсы
+server_addr.sin_port = htons(8080);        // порт 8080
+
+if (bind(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    perror("bind failed");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}
+```
+
+## Системный вызов listen()
+
+```c
+int listen(int sockfd, int backlog);
+```
+
+**Назначение:** Перевод сокета в пассивный режим для принятия входящих соединений.
+
+**Параметры:**
+- `sockfd` - файловый дескриптор привязанного сокета
+- `backlog` - максимальная длина очереди ожидающих соединений
+
+**Особенности:**
+- Только для TCP-сокетов
+- Сокет должен быть привязан через `bind()`
+- После `listen()` сокет готов принимать соединения через `accept()`
+
+**Пример:**
+```c
+if (listen(sockfd, 10) < 0) {  // очередь до 10 соединений
+    perror("listen failed");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}
+printf("Server listening on port 8080...\n");
+```
+
+## Системный вызов accept()
+
+```c
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+```
+
+**Назначение:** Принятие входящего соединения из очереди ожидающих.
+
+**Параметры:**
+- `sockfd` - файловый дескриптор слушающего сокета
+- `addr` - указатель для заполнения адреса клиента (может быть NULL)
+- `addrlen` - указатель на размер структуры адреса
+
+**Возвращает:** новый файловый дескриптор для общения с клиентом
+
+**Особенности:**
+- Блокирующий вызов (по умолчанию)
+- Создает новый сокет для каждого соединения
+- Оригинальный сокет продолжает слушать новые соединения
+
+**Пример:**
+```c
+struct sockaddr_in client_addr;
+socklen_t client_len = sizeof(client_addr);
+
+int client_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_len);
+if (client_fd < 0) {
+    perror("accept failed");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}
+
+printf("New connection from %s:%d\n", 
+       inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+```
+
+## Системный вызов recv()
+
+```c
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
+```
+
+**Назначение:** Получение данных из сокета.
+
+**Параметры:**
+- `sockfd` - файловый дескриптор сокета
+- `buf` - буфер для полученных данных
+- `len` - размер буфера
+- `flags` - флаги управления:
+  - `MSG_WAITALL` - ждать пока не получим все запрошенные данные
+  - `MSG_DONTWAIT` - неблокирующий режим
+  - `MSG_PEEK` - посмотреть данные без извлечения из буфера
+
+**Возвращает:** количество полученных байт, 0 если соединение закрыто, -1 при ошибке
+
+**Пример:**
+```c
+char buffer[1024];
+ssize_t bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
+if (bytes_received > 0) {
+    buffer[bytes_received] = '\0';  // null-terminator для строки
+    printf("Received: %s\n", buffer);
+} else if (bytes_received == 0) {
+    printf("Client disconnected\n");
+} else {
+    perror("recv failed");
+}
+```
+
+## Системный вызов send()
+
+```c
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
+```
+
+**Назначение:** Отправка данных через сокет.
+
+**Параметры:**
+- `sockfd` - файловый дескриптор сокета
+- `buf` - буфер с данными для отправки
+- `len` - количество байт для отправки
+- `flags` - флаги управления:
+  - `MSG_DONTWAIT` - неблокирующая отправка
+  - `MSG_OOB` - отправка внеполосных данных
+
+**Возвращает:** количество отправленных байт или -1 при ошибке
+
+**Особенности:**
+- Может отправить не все данные сразу
+- Нужно проверять возвращаемое значение
+
+**Пример:**
+```c
+const char *response = "Hello from server!";
+ssize_t bytes_sent = send(client_fd, response, strlen(response), 0);
+if (bytes_sent < 0) {
+    perror("send failed");
+} else {
+    printf("Sent %zd bytes\n", bytes_sent);
+}
+```
+
+## Системный вызов close()
+
+```c
+int close(int fd);
+```
+
+**Назначение:** Закрытие файлового дескриптора.
+
+**Параметры:**
+- `fd` - файловый дескриптор для закрытия
+
+**Особенности для сокетов:**
+- Для TCP: отправляет FIN-пакет для graceful shutdown
+- Освобождает системные ресурсы
+- После закрытия дескриптор нельзя использовать
+
+**Пример:**
+```c
+close(client_fd);  // закрываем соединение с клиентом
+close(sockfd);     // закрываем слушающий сокет
+```
+
+## Системный вызов connect()
+
+```c
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+
+**Назначение:** Установление соединения с сервером (для клиента).
+
+**Параметры:**
+- `sockfd` - файловый дескриптор сокета
+- `addr` - адрес сервера для подключения
+- `addrlen` - размер структуры адреса
+
+**Особенности:**
+- Для TCP: выполняет three-way handshake
+- Для UDP: просто запоминает адрес для последующих send()
+- Блокирующий вызов по умолчанию
+
+**Пример клиента:**
+```c
+int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+struct sockaddr_in server_addr;
+memset(&server_addr, 0, sizeof(server_addr));
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(8080);
+inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+
+if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+    perror("connect failed");
+    close(sockfd);
+    exit(EXIT_FAILURE);
+}
+
+printf("Connected to server!\n");
+```
+
+## Типичная последовательность вызовов
+
+**Сервер:**
+```
+socket() → bind() → listen() → accept() → recv()/send() → close()
+```
+
+**Клиент:**
+```
+socket() → connect() → send()/recv() → close()
+```
+
+Эти системные вызовы образуют основу сетевого программирования в Unix-подобных системах и позволяют создавать как простые, так и сложные сетевые приложения.

@@ -9,7 +9,6 @@ gcc -o mutex_no_lock mutex.c -lpthread
 gcc -o mutex_with_lock mutex.c -lpthread
 */
 
-
 /********************************************************
  * Пример исходного модуля для книги...
  *
@@ -20,7 +19,7 @@ gcc -o mutex_with_lock mutex.c -lpthread
  ********************************************************
  * mutex.c
  *
- * Простой многопоточный пример с мьютексом.
+ * Пример простой многопоточной программы с мьютексом.
  */
 #include <errno.h>
 #include <pthread.h>
@@ -69,15 +68,15 @@ void do_one_thing(int *pnum_times) {
   unsigned long k;
   int work;
   for (i = 0; i < 50; i++) {
-    // pthread_mutex_lock(&mut);
-    printf("doing one thing\n");
+    pthread_mutex_lock(&mut);
+    printf("выполняем одну операцию\n");
     work = *pnum_times;
-    printf("counter = %d\n", work);
+    printf("счётчик = %d\n", work);
     work++; /* инкремент без записи */
     for (k = 0; k < 500000; k++)
       ;                 /* длинный цикл */
     *pnum_times = work; /* запись значения */
-	// pthread_mutex_unlock(&mut);
+	  pthread_mutex_unlock(&mut);
   }
 }
 
@@ -86,19 +85,19 @@ void do_another_thing(int *pnum_times) {
   unsigned long k;
   int work;
   for (i = 0; i < 50; i++) {
-    // pthread_mutex_lock(&mut);
-    printf("doing another thing\n");
+    pthread_mutex_lock(&mut);
+    printf("выполняем другую операцию\n");
     work = *pnum_times;
-    printf("counter = %d\n", work);
+    printf("счётчик = %d\n", work);
     work++; /* инкремент без записи */
     for (k = 0; k < 500000; k++)
       ;                 /* длинный цикл */
     *pnum_times = work; /* запись значения */
-    // pthread_mutex_unlock(&mut);
+    pthread_mutex_unlock(&mut);
   }
 }
 
 void do_wrap_up(int counter) {
   int total;
-  printf("All done, counter = %d\n", counter);
+  printf("Всё завершено, счётчик = %d\n", counter);
 }

@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
             break;
         }
         
-        // Простой индикатор прогресса
+        // индикатор прогресса
         printf(".");
         fflush(stdout);
         dots++;

@@ -59,6 +59,7 @@ bool ConvertStringToUI64(const char *str, uint64_t *val) {
 void* ProcessServer(void* arg) {
   struct ThreadData* data = (struct ThreadData*)arg;
   
+  // Создание сокета и подключение
   int sck = socket(AF_INET6, SOCK_STREAM, 0);
   if (sck < 0) {
     fprintf(stderr, "Socket creation failed!\n");
@@ -66,6 +67,7 @@ void* ProcessServer(void* arg) {
     pthread_exit(NULL);
   }
 
+  // Настройка структуры адреса сервера
   struct sockaddr_in6 server;
   memset(&server, 0, sizeof(server));
   server.sin6_family = AF_INET6;
@@ -94,6 +96,7 @@ void* ProcessServer(void* arg) {
     pthread_exit(NULL);
   }
 
+  // Отправка задачи серверу
   char task[sizeof(uint64_t) * 3];
   memcpy(task, &data->begin, sizeof(uint64_t));
   memcpy(task + sizeof(uint64_t), &data->end, sizeof(uint64_t));
@@ -107,6 +110,7 @@ void* ProcessServer(void* arg) {
     pthread_exit(NULL);
   }
 
+  // Получение результата
   char response[sizeof(uint64_t)];
   int bytes_received = recv(sck, response, sizeof(response), 0);
   if (bytes_received < (int)sizeof(uint64_t)) {

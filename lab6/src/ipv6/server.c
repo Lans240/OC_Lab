@@ -93,27 +93,30 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+  // Создание серверного сокета
   int server_fd = socket(AF_INET6, SOCK_STREAM, 0);
   if (server_fd < 0) {
     fprintf(stderr, "Can not create server socket!");
     return 1;
   }
-
+  // Настройка адреса сервера
   struct sockaddr_in6 server;
-  memset(&server, 0, sizeof(server));
-  server.sin6_family = AF_INET6;
-  server.sin6_port = htons((uint16_t)port);
-  server.sin6_addr = in6addr_any;
+  memset(&server, 0, sizeof(server)); // Обнуление структуры
+  server.sin6_family = AF_INET6; // IPv6
+  server.sin6_port = htons((uint16_t)port);  // Порт в сетевом порядке байт
+  server.sin6_addr = in6addr_any; // Любой IP-адрес
 
   int opt_val = 1;
   setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
 
+  // Привязка сокета к адресу
   int err = bind(server_fd, (struct sockaddr *)&server, sizeof(server));
   if (err < 0) {
     fprintf(stderr, "Can not bind to socket!");
     return 1;
   }
-
+  
+  //Режим прослушивания
   err = listen(server_fd, 128);
   if (err < 0) {
     fprintf(stderr, "Could not listen on socket\n");
@@ -125,6 +128,7 @@ int main(int argc, char **argv) {
   while (true) {
     struct sockaddr_in6 client;
     socklen_t client_len = sizeof(client);
+    // Принятие входящего соединения
     int client_fd = accept(server_fd, (struct sockaddr *)&client, &client_len);
 
     if (client_fd < 0) {
@@ -132,6 +136,7 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    // Получение и вывод IP-адреса клиента
     char client_ip[INET6_ADDRSTRLEN];
     inet_ntop(AF_INET6, &client.sin6_addr, client_ip, INET6_ADDRSTRLEN);
     printf("Client connected from %s:%d\n", client_ip, ntohs(client.sin6_port));
